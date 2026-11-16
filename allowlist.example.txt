@@ -1,0 +1,4 @@
+! proxy280 allowlist
+! Copy this file to allowlist.txt and add domains to allow.
+! Format: @@||domain^
+! @@||example.com^

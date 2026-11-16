@@ -1,0 +1,14 @@
+.git
+.github
+.claude
+.gitignore
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+Makefile
+local.mk
+compose.yaml
+allowlist*.txt
+tests

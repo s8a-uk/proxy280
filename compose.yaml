@@ -1,0 +1,32 @@
+services:
+  proxy280:
+    build:
+      context: .
+      target: runtime
+    image: proxy280:latest
+    container_name: proxy280
+    ports:
+      - "28000:28000"
+    environment:
+      PROXY280_TIMEZONE: Asia/Tokyo
+    volumes:
+      # 編集は再起動なしで /allowlist に反映される
+      - type: bind
+        source: ./allowlist.txt
+        target: /config/allowlist.txt
+        read_only: true
+        bind:
+          # ファイルが無いときにディレクトリを作らせない (make up が example から作る)
+          create_host_path: false
+    restart: unless-stopped
+
+  dev:
+    profiles: [dev]
+    build:
+      context: .
+      target: dev
+    image: proxy280:dev
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - .:/app
