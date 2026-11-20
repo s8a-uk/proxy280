@@ -19,6 +19,10 @@ services:
           # ファイルが無いときにディレクトリを作らせない (make up が example から作る)
           create_host_path: false
     restart: unless-stopped
+    # 権限は最小にする (ファイルを書かないのでルートファイルシステムも読み取り専用)
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
 
   dev:
     profiles: [dev]
@@ -28,5 +32,9 @@ services:
     image: proxy280:dev
     environment:
       PYTHONDONTWRITEBYTECODE: "1"
+    # 権限は最小にし、ネットワークは使わせない (テストは loopback だけを使う)
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    network_mode: none
     volumes:
       - .:/app
