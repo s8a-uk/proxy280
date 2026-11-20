@@ -102,6 +102,9 @@ DNS フィルタなどと同じ compose に並べる例（ソースを `./proxy2
     image: proxy280:latest
     container_name: proxy280
     restart: always
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
     ports:
       - "28000:28000"
     environment:
@@ -121,7 +124,10 @@ DNS フィルタなどと同じ compose に並べる例（ソースを `./proxy2
 | `make lint` / `make fmt` | ruff によるチェック・整形 |
 | `make check` | lint + test |
 | `make lock` | `uv.lock` を更新（`make lock LOCK_ARGS=--upgrade` で依存を最新化） |
+| `make github-settings` | GitHub リポジトリの設定（許可するアクション・Dependabot・main のルールセット等）を `gh` で適用 |
 
 デプロイなど環境固有のターゲットは `local.mk`（git 管理外）に書くと `Makefile` から読み込まれる。
 
-CI（GitHub Actions）では lint・テストと、runtime イメージのビルド・起動確認を行う。
+CI（GitHub Actions）では PR ごとに lint・テストと、runtime イメージのビルド・起動確認を行う。main へは、CI が通った PR でだけ変更できる（ルールセット）。
+
+GitHub Actions・ベースイメージ・`uv.lock` の版は固定しており、Dependabot が毎週更新を PR にする。

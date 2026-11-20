@@ -26,3 +26,11 @@
 - `allowlist.txt`・`local.mk` は環境固有のファイル（git 管理外）。サンプルは `allowlist.example.txt`
 - IP アドレス・ホスト名・デプロイ先などの環境固有の情報
 - 特定の DNS フィルタ製品の名前。README・コード・コミットメッセージでは「DNS フィルタ」と書く
+
+## セキュリティ
+
+- 版は固定する。GitHub Actions はコミットの SHA、ベースイメージ（uv・Python）は版と digest、Python の依存は `uv.lock`（ハッシュ付き）。更新は Dependabot が毎週 PR にする（公開から 7 日待つ `cooldown`）。Python はパッチ版だけ上がり、3.16 などへは `requires-python`・`.python-version`・Dockerfile を変えて手で上げる
+- コンテナは権限を最小にする。本番は `read_only`・`cap_drop: [ALL]`・`no-new-privileges`、非 root ユーザで動かす。開発コマンド（compose.yaml の `dev`）はケーパビリティなし・ネットワークなしで動かす（テストは外部に接続しない）
+- ワークフローの権限は最小にし（`contents: read`）、checkout は `persist-credentials: false`。`run:` の中に `${{ }}` を直接書かず `env:` を通す。ジョブには `timeout-minutes` を付ける
+- ワークフローは PR でだけ検査する。main のルールセットはジョブ `all checks passed` を必須にしているので、ジョブを足したらその `needs` にも足す
+- 使うアクションを増やすときは、`.github/apply-repository-settings.sh` の許可にも足し、`make github-settings` で適用する
